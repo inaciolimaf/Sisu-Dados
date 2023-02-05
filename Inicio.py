@@ -41,23 +41,32 @@ class SISUApi:
         self.navegador = webdriver.Chrome(service=servico)
 
     def preencher_dados(self):
-        for i in tqdm(range(200000, 300000+1)):
-            # Pelas minhas observações os códigos variam entre esses dois valores
-            # O tqdm é para criar uma barra de progresso
-            link = f"https://sisu-api-pcr.apps.mec.gov.br/api/v1/oferta/{i}/modalidades"
-            # Nesse link retorna um json com várias informações sobre os cursos
-            self._get_url(link)
-            # Lê o link
-            if self.resultado == "":
-                continue
-                # Se não existir nenhuma vaga com o código digitado o retorno é vazio e só pula para a próxima interação
-            else:
-                arquivoJson = self.resultado
-                print(f"\nEncontrado Json. Já encontrados: {len(self.codigoSISU)}")
-                arquivoJson = dict(arquivoJson)
-                # Pega o Json e converte em dicionário por garantia
-                self._preencher_dado(arquivoJson)
-                # Preenche as listas com os valores do json
+        linkUniversidades = "https://sisu-api-pcr.apps.mec.gov.br/api/v1/oferta/instituicoes/uf"
+        self._get_url(linkUniversidades)
+        self.resultado = dict(self.resultado)
+        for estado, universidades in self.resultado.items():
+            for universidade in universidades:
+                print(f"Para a universidade: {universidade['no_ies']}")
+                linkUniversidade = f"https://sisu-api-pcr.apps.mec.gov.br/api/v1/oferta/instituicao/{universidade['co_ies']}"
+                self._get_url(linkUniversidade)
+                cursos = dict(self.resultado)
+                for i in range(0, len(cursos)-1):
+                    # -1 porque a primeira chave é do json é "search_rule"
+                    codigo = cursos[str(i)]["co_oferta"]
+                    print(codigo)
+                    linkcurso = f"https://sisu-api-pcr.apps.mec.gov.br/api/v1/oferta/{codigo}/modalidades"
+                    # Nesse link retorna um json com várias informações sobre os cursos
+                    self._get_url(linkcurso)
+                    # Lê o link
+                    if self.resultado == "":
+                        continue
+                        # Se não existir nenhuma vaga com o código digitado o retorno é vazio e só pula para a próxima interação
+                    else:
+                        arquivoJson = self.resultado
+                        arquivoJson = dict(arquivoJson)
+                        # Pega o Json e converte em dicionário por garantia
+                        self._preencher_dado(arquivoJson)
+                        # Preenche as listas com os valores do json
 
     def _get_url(self, link):
         self.navegador.delete_all_cookies()
@@ -116,11 +125,13 @@ class SISUApi:
             self.cota.append(modalidade['no_concorrencia'])
             self.vagasCota.append(modalidade['qt_vagas'])
             self.bonus_percentual.append(modalidade['qt_bonus_perc'])
-            self.notaCorte1dia.append(modalidade['nu_nota_corte'])
+            # self.notaCorte1dia.append(modalidade['nu_nota_corte'])
 
     def exportar_dados(self):
         valores = {'CodigoSISU': self.codigoSISU, 'CodigoIES': self.codigoIES, 'Universidade': self.universidade, 'Nome_Estado': self.nomeEstado,'Nome_Municipio_Campus': self.nomeMunicipio, 'Campus': self.campus, 'Nome_Curso': self.nomeCurso, 'Grau': self.grau, 'Turno': self.turno, 'Cota': self.cota, 'Quant_Vagas_Cota': self.vagasCota,  'Minimo_Nota_CN': self.MinimaNotaCN, 'Peso_Nota_CN': self.pesoNotaCN, 'Minimo_Nota_MT': self.minimoNotaMT,
-                   'Peso_Nota_MT': self.pesoNotaMT,  'Minimo_Nota_L': self.minimoNotaL, 'Peso_Nota_L': self.pesoNotaL, 'Minimo_Nota_CH': self.minimoNotaCH, 'Peso_Nota_CH': self.pesoNotaCH, 'Minimo_Nota_REDACAO': self.minimoNotaREDACAO, 'Peso_Nota_REDACAO': self.pesoNotaREDACAO, 'Media_Minima': self.mediaMinima, 'Bonus_Percentual': self.bonus_percentual, 'Nota_Corte_1_Dia': self.notaCorte1dia}
+                   'Peso_Nota_MT': self.pesoNotaMT,  'Minimo_Nota_L': self.minimoNotaL, 'Peso_Nota_L': self.pesoNotaL, 'Minimo_Nota_CH': self.minimoNotaCH, 'Peso_Nota_CH': self.pesoNotaCH, 'Minimo_Nota_REDACAO': self.minimoNotaREDACAO, 'Peso_Nota_REDACAO': self.pesoNotaREDACAO, 'Media_Minima': self.mediaMinima, 'Bonus_Percentual': self.bonus_percentual,
+                #    'Nota_Corte_1_Dia': self.notaCorte1dia
+                   }
         df = pd.DataFrame(valores)
         num_dia = 1
         df.to_excel(f'ResultadoDia{num_dia}.xlsx', index=False)
