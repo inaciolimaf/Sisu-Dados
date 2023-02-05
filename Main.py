@@ -1,5 +1,4 @@
 import time
-from tqdm import tqdm
 import pandas as pd
 import json
 from selenium import webdriver
