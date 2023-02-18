@@ -170,7 +170,7 @@ class SISUApi:
                 diferenca_nota_corte = []
                 for i, nota in enumerate(list(nota_de_corte_dia)):
                     diferenca_nota_corte.append(
-                        float(nota)-float(self.notaCorteAtual[i]))
+                        float(self.notaCorteAtual[i])-float(nota))
                 self.notasCorteAnteriores.append(
                     {f'Nota_Corte_{dia_anterior}_Dia': nota_de_corte_dia})
                 self.notasCorteAnteriores.append(
