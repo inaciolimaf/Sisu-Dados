@@ -20,7 +20,7 @@ class SISUApi:
         self.grau = []
         self.turno = []
         self.codigoIES = []
-        self.MinimaNotaCN = []
+        self.minimaNotaCN = []
         self.pesoNotaCN = []
         self.minimoNotaMT = []
         self.pesoNotaMT = []
@@ -113,7 +113,7 @@ class SISUApi:
             self.nomeCurso.append(oferta['no_curso'])
             self.grau.append(oferta['no_grau'])
             self.turno.append(oferta['no_turno'])
-            self.MinimaNotaCN.append(oferta['nu_nmin_cn'])
+            self.minimaNotaCN.append(oferta['nu_nmin_cn'])
             self.pesoNotaCN.append(oferta['nu_peso_cn'])
             self.minimoNotaMT.append(oferta['nu_nmin_m'])
             self.pesoNotaMT.append(oferta['nu_peso_m'])
@@ -142,7 +142,7 @@ class SISUApi:
                    'Turno': self.turno,
                    'Cota': self.cota,
                    'Quant_Vagas_Cota': self.vagasCota,
-                   'Minimo_Nota_CN': self.MinimaNotaCN,
+                   'Minimo_Nota_CN': self.minimaNotaCN,
                    'Peso_Nota_CN': self.pesoNotaCN,
                    'Minimo_Nota_MT': self.minimoNotaMT,
                    'Peso_Nota_MT': self.pesoNotaMT,
@@ -186,3 +186,4 @@ if __name__ == "__main__":
     sisu = SISUApi()
     sisu.preencher_dados()
     sisu.exportar_dados()
+    sisu.navegador.close()
