@@ -43,20 +43,20 @@ class SISUApi:
         self.navegador = webdriver.Chrome(service=servico)
 
     def preencher_dados(self):
-        linkUniversidades = "https://sisu-api-pcr.apps.mec.gov.br/api/v1/oferta/instituicoes/uf"
+        linkUniversidades = "https://sisu-api.sisu.mec.gov.br/api/v1/oferta/instituicoes/uf"
         self._get_url(linkUniversidades)
         self.resultado = dict(self.resultado)
         for estado, universidades in self.resultado.items():
             for universidade in universidades:
                 print(f"Para a universidade: {universidade['no_ies']}")
-                linkUniversidade = f"https://sisu-api-pcr.apps.mec.gov.br/api/v1/oferta/instituicao/{universidade['co_ies']}"
+                linkUniversidade = f"https://sisu-api.sisu.mec.gov.br/api/v1/oferta/instituicao/{universidade['co_ies']}"
                 self._get_url(linkUniversidade)
                 cursos = dict(self.resultado)
                 for i in range(0, len(cursos)-1):
                     # -1 porque a primeira chave é do json é "search_rule"
                     codigo = cursos[str(i)]["co_oferta"]
                     print(codigo)
-                    linkcurso = f"https://sisu-api-pcr.apps.mec.gov.br/api/v1/oferta/{codigo}/modalidades"
+                    linkcurso = f"https://sisu-api.sisu.mec.gov.br/api/v1/oferta/{codigo}/modalidades"
                     # Nesse link retorna um json com várias informações sobre os cursos
                     self._get_url(linkcurso)
                     # Lê o link
@@ -106,7 +106,7 @@ class SISUApi:
         for modalidade in modalidades:
             self.codigoSISU.append(oferta['co_oferta'])
             self.codigoIES.append(oferta['co_ies'])
-            self.universidade.append(oferta['no_ies'])
+            self.universidade.append(f"{oferta['sg_ies']} - {oferta['no_ies']}")
             self.nomeEstado.append(oferta['sg_uf_ies'])
             self.nomeMunicipio.append(oferta['no_municipio_campus'])
             self.campus.append(oferta['no_campus'])
