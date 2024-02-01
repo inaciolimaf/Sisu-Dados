@@ -164,13 +164,13 @@ class SISUApi:
 
     def pegar_dados_anteriores(self):
         for dia_anterior in range(1, self.num_dia):
-            df = pd.read_excel(f"ResultadoDia{self.num_dia-1}.xlsx")
+            df = pd.read_excel(f"ResultadoDia{self.num_dia-1}.xlsx").fillna(0)
             if dia_anterior == self.num_dia - 1:
                 nota_de_corte_dia = df[f'Nota_Corte_{dia_anterior}_Dia']
                 diferenca_nota_corte = []
                 for i, nota in enumerate(list(nota_de_corte_dia)):
                     diferenca_nota_corte.append(
-                        float(self.notaCorteAtual[i])-float(nota))
+                        float(self.notaCorteAtual[i] if self.notaCorteAtual[i] is not None else 0)-float(nota))
                 self.notasCorteAnteriores.append(
                     {f'Nota_Corte_{dia_anterior}_Dia': nota_de_corte_dia})
                 self.notasCorteAnteriores.append(
